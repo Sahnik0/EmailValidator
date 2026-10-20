@@ -3,6 +3,8 @@ const app = express()
 const port = 5000
 const validator = require('./routes/validator')
 
+app.use(express.json())
+app.use(express.urlencoded({extended: true}))
 app.use('/api/validate',validator)
 
 app.get('/',(req,res)=>{
