@@ -1,7 +1,8 @@
 const EMAIL_PATTERN = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/;
 const ROLE_ADDRESSES = new Set(['admin', 'info', 'support', 'sales', 'noreply']);
+const checkMX = require('../services/resolver');
 
-function validateEmail(req, res, next) {
+async function validateEmail(req, res, next) {
     const {email} = req.body;
 
     if (typeof email !== 'string') {
@@ -30,12 +31,28 @@ function validateEmail(req, res, next) {
     const at = value.lastIndexOf('@');
     const name = value.slice(0, at).toLowerCase();
     const domain = value.slice(at + 1);
+    const mxStatus = await checkMX(domain);
+
+    if (mxStatus === 'no') {
+        return res.status(400).json({
+            message: 'The email domain cannot receive mail',
+            valid: false
+        });
+    }
+
+    if (mxStatus === 'unknown') {
+        return res.status(503).json({
+            message: 'The email domain could not be checked',
+            valid: false
+        });
+    }
 
     req.emailData = { // req. here binds the calculated data to that specific req
         value,
         name,
         domain,
-        role: ROLE_ADDRESSES.has(name)
+        role: ROLE_ADDRESSES.has(name),
+        mx: true
     };
 
     next();
