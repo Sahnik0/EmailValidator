@@ -5,6 +5,8 @@ const resolver = new Resolver({
     tries: 1
 });
 
+//Does the domain of the mail actually returns records ??
+
 async function checkMX(domain) {
     try {
         const records = await resolver.resolveMx(domain);

@@ -48,6 +48,7 @@ async function validateEmail(req, res, next) {
     }
 
     req.emailData = { // req. here binds the calculated data to that specific req
+        email,
         value,
         name,
         domain,

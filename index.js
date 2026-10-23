@@ -2,10 +2,11 @@ const express = require('express')
 const app = express()
 const port = 5000
 const validator = require('./routes/validator')
+const rateLimiter = require('./lib/rateLimiter')
 
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
-app.use('/api/validate',validator)
+app.use(validator,rateLimiter)
 
 app.get('/',(req,res)=>{
     res.json({
