@@ -9,7 +9,8 @@ const mongo = require('./lib/mongo')
 mongo()
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
-app.use(validator,rateLimiter)
+app.use(rateLimiter)
+app.use(validator)
 
 app.get('/',(req,res)=>{
     res.json({
