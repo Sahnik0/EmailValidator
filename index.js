@@ -1,9 +1,12 @@
+require('dotenv').config();
 const express = require('express')
 const app = express()
 const port = 5000
 const validator = require('./routes/validator')
 const rateLimiter = require('./lib/rateLimiter')
+const mongo = require('./lib/mongo')
 
+mongo()
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 app.use(validator,rateLimiter)
