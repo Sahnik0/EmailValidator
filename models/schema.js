@@ -20,6 +20,9 @@ const userSchema = mongoose.Schema(
         },
         mx:{
             type: Boolean
+        },
+        pass: {
+            type: String
         }
     },
     {

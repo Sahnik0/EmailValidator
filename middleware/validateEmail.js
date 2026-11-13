@@ -2,8 +2,9 @@ const EMAIL_PATTERN = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za
 const ROLE_ADDRESSES = new Set(['admin', 'info', 'support', 'sales', 'noreply']);
 const checkMX = require('../services/resolver');
 
+
 async function validateEmail(req, res, next) {
-    const {email} = req.body;
+    const {email,pass} = req.body;
 
     if (typeof email !== 'string') {
         return res.status(400).json({
@@ -21,6 +22,12 @@ async function validateEmail(req, res, next) {
         });
     }
 
+    if(pass.length < 8){
+        return res.status(404).json({
+            error:'Pass should be larger than 8 char'
+        })
+    }
+
     if (value.length > 254 || !EMAIL_PATTERN.test(value)) {
         return res.status(400).json({
             message: 'Not a valid mail',
@@ -32,6 +39,7 @@ async function validateEmail(req, res, next) {
     const name = value.slice(0, at).toLowerCase();
     const domain = value.slice(at + 1);
     const mxStatus = await checkMX(domain);
+    
 
     if (mxStatus === 'no') {
         return res.status(400).json({
@@ -53,7 +61,8 @@ async function validateEmail(req, res, next) {
         name,
         domain,
         role: ROLE_ADDRESSES.has(name),
-        mx: true
+        mx: true,
+        pass
     };
 
     next();

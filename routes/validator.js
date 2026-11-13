@@ -3,17 +3,19 @@ const router = express.Router()
 const validateEmail = require('../middleware/validateEmail')
 const cache = require('../lib/cacheData');
 const User = require('../models/schema')
+
 router.use('/api/validate',validateEmail, cache)
 
 router.post('/api/validate',  async (req, res) => {
-    const {email, name, domain, role, mx} = req.emailData;
+    const {email, name, domain, role, mx, pass} = req.emailData;
     try{
         const user = await User.create({
             email: email,
             name: name,
             domain: domain,
             role: role,
-            mx: mx
+            mx: mx,
+            pass: pass
         })
 
         res.status(201).json(user)
