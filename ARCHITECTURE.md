@@ -161,7 +161,7 @@ Example order:
 
 ```js
 router.post(
-    '/api/validate',
+    '/api/register',
     validateEmail,
     cacheData,
     async (req, res) => {
@@ -185,7 +185,7 @@ remove an existing MongoDB index.
 For a request such as:
 
 ```http
-POST /api/validate
+POST /api/register
 Content-Type: application/json
 ```
 

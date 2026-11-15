@@ -16,7 +16,7 @@ app.get('/',(req,res)=>{
     res.json({
         creator: "Sahnik Biswas",
         info: "Hii this is an email validator !!, You can intregate with your sign up flow.",
-        usecase: "Kindly go to /api/validate to use this end point"})
+        usecase: "Kindly go to /api/register to use this end point"})
     })
 
 app.listen(port,()=>{

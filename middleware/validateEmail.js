@@ -1,12 +1,10 @@
 const EMAIL_PATTERN = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/;
 const ROLE_ADDRESSES = new Set(['admin', 'info', 'support', 'sales', 'noreply']);
 const checkMX = require('../services/resolver');
-const bcrypt = require('bcryptjs')
-
 
 
 async function validateEmail(req, res, next) {
-    const {email,pass} = req.body;
+    const {email} = req.body;
 
     if (typeof email !== 'string') {
         return res.status(400).json({
@@ -31,21 +29,6 @@ async function validateEmail(req, res, next) {
         });
     }
     
-
-    //PASS
-    if(!pass){
-        return res.status(400).json({
-            error:'Please enter a pass'
-        })
-    }
-
-    if(pass.length < 8){
-        return res.status(404).json({
-            error:'Pass should be larger than 8 char'
-        })
-    }
-    const hash = await bcrypt.hash(pass,10)
-
 
     const at = value.lastIndexOf('@');
     const name = value.slice(0, at).toLowerCase();
@@ -73,8 +56,7 @@ async function validateEmail(req, res, next) {
         name,
         domain,
         role: ROLE_ADDRESSES.has(name),
-        mx: true,
-        hash
+        mx: true
     };
 
     next();

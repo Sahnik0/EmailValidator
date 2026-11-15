@@ -1,31 +1,16 @@
 const express = require('express')
 const router = express.Router()
-const validateEmail = require('../middleware/validateEmail')
 const cache = require('../lib/cacheData');
-const User = require('../models/schema')
+const rateLimiter = require('../lib/rateLimiter')
+const registerUser = require('../controller/register')
 const passWordChecker = require('../controller/verify-pass')
-
-router.use('/api/validate',validateEmail, cache)
+const validateEmail = require('../middleware/validateEmail')
 router.use('/api/verify',passWordChecker)
-router.post('/api/validate',  async (req, res) => {
-    const {email, name, domain, role, mx, hash} = req.emailData;
-    try{
-        const user = await User.create({
-            email: email,
-            name: name,
-            domain: domain,
-            role: role,
-            mx: mx,
-            hash: hash
-        })
+const User = require('../models/schema');
+router.use('/api/fetch-data',cache,rateLimiter)
 
-        res.status(201).json(user)
-    }catch(err){
-        res.json({message: `Here is the error ${err.message}`})
-    }
-    // return res.status(200).json(
-    //     {emai: email, message: 'Valid mail',valid: true ,name, domain, role, mx})
-})
+router.post('/api/register', validateEmail, registerUser)
+
 
 router.get('/api/fetch-data',async (req,res)=>{
     const email = req.query.email;
@@ -47,14 +32,14 @@ router.delete('/api/delete',async(req,res)=>{
     const email = req.query.email;
     try{
         if(email){
-            const user = await User.findOneAndDelete({email})
-            return res.status(204).json(user)
+            await User.findOneAndDelete({email})
+            return res.status(200).json({message: 'Deleted'})
         }else{
             res.status(404).json({message:'No email found with req body'})
         }
     }
     catch(err){
-        res.status(400).json(err)
+        res.status(400).json({error: err.message})
     }
 })
 
