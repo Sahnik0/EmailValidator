@@ -21,7 +21,7 @@ const userSchema = mongoose.Schema(
         mx:{
             type: Boolean
         },
-        pass: {
+        hash: {
             type: String
         }
     },

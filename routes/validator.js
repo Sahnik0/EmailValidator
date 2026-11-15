@@ -3,11 +3,12 @@ const router = express.Router()
 const validateEmail = require('../middleware/validateEmail')
 const cache = require('../lib/cacheData');
 const User = require('../models/schema')
+const passWordChecker = require('../controller/verify-pass')
 
 router.use('/api/validate',validateEmail, cache)
-
+router.use('/api/verify',passWordChecker)
 router.post('/api/validate',  async (req, res) => {
-    const {email, name, domain, role, mx, pass} = req.emailData;
+    const {email, name, domain, role, mx, hash} = req.emailData;
     try{
         const user = await User.create({
             email: email,
@@ -15,7 +16,7 @@ router.post('/api/validate',  async (req, res) => {
             domain: domain,
             role: role,
             mx: mx,
-            pass: pass
+            hash: hash
         })
 
         res.status(201).json(user)
@@ -40,6 +41,25 @@ router.get('/api/fetch-data',async (req,res)=>{
     }catch(err){
         res.status(404).json({message: "Mongo error"})
     }
+})
+
+router.delete('/api/delete',async(req,res)=>{
+    const email = req.query.email;
+    try{
+        if(email){
+            const user = await User.findOneAndDelete({email})
+            return res.status(204).json(user)
+        }else{
+            res.status(404).json({message:'No email found with req body'})
+        }
+    }
+    catch(err){
+        res.status(400).json(err)
+    }
+})
+
+router.post('/api/verify',async(req,res)=>{
+
 })
 
 module.exports = router
